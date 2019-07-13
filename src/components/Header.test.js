@@ -12,6 +12,6 @@ describe('<Header />', () => {
     });
     it('should have component render', () => {
         expect(wrapper).toBeTruthy();
-        expect(wrapper.find('img')).toHaveLength(2);
+        expect(wrapper.find('img')).toHaveLength(1);
     });
 })

@@ -35,11 +35,11 @@ src/ contains the app code.<br>
     nvm use 8.10.0 -> version is used while creation of this project
    
 ### Commands
-    yarn -> to Download all the necessary packages.
-    yarn start -> to run in local , url : http://localhost:3000
-    yarn test a -> to run all tests
-    yarn build -> Builds the app for production to the `build` folder.
-    yarn cypress -> to run cypress test.
+    npm install -> to Download all the necessary packages.
+    npm start -> to run in local , url : http://localhost:3000
+    npm test a -> to run all tests
+    npm run build -> Builds the app for production to the `build` folder.
+    npm run cypress -> to run cypress test.
 
     
   
