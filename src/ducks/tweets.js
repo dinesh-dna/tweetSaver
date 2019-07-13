@@ -11,8 +11,8 @@ export function getTweets(resourceType, id, query, details) {
     return {
         type: GET_TWEETS,
         resourceType: upperCase(resourceType),
-        id: 'obama' ,
-        query : 'count=10',
+        id,
+        query,
         details
       };
 }

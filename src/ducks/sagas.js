@@ -1,6 +1,7 @@
-import { call, put } from 'redux-saga/effects';
+// import { call } from 'redux-saga/effects';
+import { put } from 'redux-saga/effects';
 import urlConfig from './urlConfig';
-import {httpGet} from '../utils/axiosRequest';
+// import {httpGet} from '../utils/axiosRequest';
 import {requestSucceeded, requestFailed} from './requests';
 import {data} from '../utils/initialData';
 
@@ -11,8 +12,8 @@ export function* getWorkerSaga(action) {
     let url;
     try {
       url = `${urlConfig.tweetsaver[resourceType]}${idString}${queryString}`;
-
       // const response = yield call(httpGet,url);
+  
       yield put(
         requestSucceeded(type, resourceType, data, { id, query, details })
       );

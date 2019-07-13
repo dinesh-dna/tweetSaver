@@ -18,7 +18,7 @@ export class App extends React.Component {
   }
   
   componentDidMount() {
-    this.props._getTweets('TWEETS');
+    this.props._getTweets('TWEETS', null, 'q=obama&count=10');
   }
 
   componentDidUpdate(prevState, prevProps) {
@@ -39,7 +39,7 @@ export class App extends React.Component {
     if(savedTweet.length> 0 && savedTweet !== prevState.savedTweet){
       for( var i=array.length - 1; i>=0; i--){
         for( var j=0; j<savedTweet.length; j++){
-            if(array[i] && (array[i].id == savedTweet[j].id)){
+            if(array[i] && (array[i].id === savedTweet[j].id)){
               array.splice(i, 1);
               this.setState((state) => {
                 return {
@@ -75,37 +75,36 @@ export class App extends React.Component {
   onDrop = (e) => {
     let id = e.dataTransfer.getData("object");
     let draggedObject = this.props.tweets.tweets.filter((twt) => {
-      if(twt.id == id) {
-        return twt;
-      }
+        return twt.id == id
     });
 
     draggedObject.forEach(obj => (
       this.setState({savedTweet: [...this.state.savedTweet, obj]}, () => {
         localStorage.setItem('savedtweet', JSON.stringify(this.state.savedTweet))
-      })
-      ))
-  }
+      })))
+    }
 
   render(){
   const {search, savedTweet, tweetList} = this.state;
   return (
     <div style={{margin: '20px'}}>
       <StyledInput 
+        id = 'searchText'
         type='text' 
         placeholder=' Search Twitter ... '
         value={search} 
         onChange={this.handleSearch}
       />
-
       {tweetList.length > 0 ? (
         <Row >
-          <TweetListCol sm={6}>
+          <TweetListCol sm={6} id='tweetListCol'>
               <Tweets tweet={tweetList} onDragStart={this.onDragStart}/>
           </TweetListCol>
           <SavedTweetCol sm={6} 
+              id = 'savedTweetsCol'
               onDragOver = {(e) => this.onDragOver(e)}
-              onDrop= {e => this.onDrop(e)}>
+              onDrop= {e => this.onDrop(e)}
+              >
               {savedTweet.length > 0 ? 
               <Tweets tweet={savedTweet} onDragStart={this.onDragStart}/> : 'Saved Tweets'
               }          
@@ -123,5 +122,5 @@ export default connect(state => {
     tweets
     };
   },
-  dispatch => ({_getTweets: resourceType => dispatch(getTweets(resourceType))
+  dispatch => ({_getTweets: (resourceType,id, query) => dispatch(getTweets(resourceType,id,query))
   }))(App);
