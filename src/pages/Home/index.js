@@ -1,16 +1,19 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {getDirection} from '../../ducks/direction';
 import {getTweets} from '../../ducks/tweets';
 import Tweets from '../../components/Cards';
 import {Row, Col} from 'react-bootstrap';
 
+let filteredContent = [];
 export class App extends React.Component {
   
   constructor(props){
     super(props);
     this.state = {
-      search: ''
+      search: '',
+      searchList: [],
+      savedTweet: [],
+      tweetList: this.props.tweets
     }
   }
   
@@ -18,45 +21,70 @@ export class App extends React.Component {
     this.props._getTweets('TWEETS');
   }
 
-  // handleRouteChange = (e) => {
-  //   const selectedRoute = this.props.routes.find(eachRoute =>  eachRoute.Description === e.target.value)
-  //   this.setState(function(){
-  //     return {selectedRoute: selectedRoute}
-  //  })
-  //   this.props._getDirection('DIRECTION',selectedRoute['Route']);
-  // }
+  componentDidUpdate(prevState, prevProps) {
+    const {savedTweet, tweetList} = this.state;
+    let array = [...tweetList];
+    if(savedTweet.length> 0 && savedTweet !== prevState.savedTweet){
+      for( var i=array.length - 1; i>=0; i--){
+        for( var j=0; j<savedTweet.length; j++){
+            if(array[i] && (array[i].id == savedTweet[j].id)){
+              array.splice(i, 1);
+              this.setState((state) => {
+                return {
+                  tweetList: array
+                }
+              })
+            }
+          }
+        }
+    }
+  }
 
-  // handleDirectionChange = (e) => {
-  //   const selectedDirection = this.props.direction.find(eachDirection =>  eachDirection.Text === e.target.value)
-  //   this.setState(function(){
-  //     return {selectedDirection: selectedDirection}
-  //  });
-  //   this.props._getStops('STOPS',`${this.state.selectedRoute['Route']}/${selectedDirection['Value']}`);
-  // };
-
-
-  // handleStopEntry = () => {
-  //   if(this.state.stopNumber !== undefined){
-  //     this.props._getDepartureList('NEXTTRIP_BASEURL', this.state.stopNumber); 
-  //     this.props.history.push('/nextTrip', {stopID: this.state.stopNumber});
-  //   }
-  //   else{
-  //     alert('Please enter Stop number');
-  //   }
-  // };
+   componentWillReceiveProps(prevProps){
+    if(this.props.tweets !== prevProps.tweets){
+      this.setState((state, props) => { 
+        return {tweetList: props.tweets.tweets}
+      })
+    }
+   }
 
   handleSearch = (event) => {
-    this.setState({search: event.target.value})
+     this.setState({search: event.target.value}, function() {
+        filteredContent = Object.values(this.state.tweetList).length > 0 ? 
+        this.props.tweets.tweets.filter(tweet => {
+            return tweet.text.toLowerCase().indexOf(this.state.search.toLowerCase()) !== -1;
+          }) : {}
+          this.setState(() => {
+            return {tweetList: filteredContent}
+          })
+     })
   }
+
+  onDragOver = (e) => {
+    e.preventDefault();
+  }
+
+  onDragStart = (e, obj) => {
+    console.log(e, obj);
+    e.dataTransfer.setData('Object', obj);
+  };
+
+  onDrop = (e) => {
+    let id = e.dataTransfer.getData("object");
+    let draggedObject = this.props.tweets.tweets.filter((twt) => {
+      if(twt.id == id) {
+        return twt;
+      }
+    });
+
+    draggedObject.forEach(obj => (
+      this.setState({savedTweet: [...this.state.savedTweet, obj]})
+      ))
+  }
+
   render(){
   const { tweets } = this.props;
-  const {search} = this.state;
-
-  let filteredContent = Object.values(tweets).length > 0 ? 
-        tweets.tweets.filter(tweet => {
-            return tweet.text.toLowerCase().indexOf(search.toLowerCase()) !== -1;
-          }) : {}
-
+  const {search, savedTweet,searchList, tweetList} = this.state;
   return (
     <div style={{margin: '20px'}}>
       <input 
@@ -64,19 +92,21 @@ export class App extends React.Component {
         placeholder=' Search Twitter ... '
         value={search} 
         onChange={this.handleSearch}
-        style={{margin: '10px', width: '48%', padding: '10px', border: '1px solid black'}}
+        style={{margin: '10px', width: '30%', padding: '5px', border: '1px solid black'}}
       />
 
-      {filteredContent.length > 0 ? (
+      {tweetList.length > 0 ? (
         <Row >
           <Col sm={6} style={{ padding: '8px'}}>
-              <Tweets tweet={filteredContent} />
+              <Tweets tweet={tweetList} onDragStart={this.onDragStart}/>
           </Col>
-          <Col sm={5}>
-            <Col style={{backgroundColor: '#E3E3E3'}}>
-              Saved Tweets
-            </Col>
-              {/* <SavedTweets /> */}
+          <Col sm={6} 
+              style={{border: '0.5px dotted black', marginTop: '20px'}} 
+              onDragOver = {(e) => this.onDragOver(e)}
+              onDrop= {e => this.onDrop(e)}>
+              {savedTweet.length > 0 ? 
+              <Tweets tweet={savedTweet} onDragStart={this.onDragStart}/> : 'Saved Tweets'
+              }          
           </Col>
         </Row>
       ) : <React.Fragment> No Tweets found ... </React.Fragment>}
@@ -86,12 +116,10 @@ export class App extends React.Component {
 }
 
 export default connect(state => {
-  const {tweets} = state;
-
+  const { tweets } = state;
   return {
     tweets
     };
   },
-  dispatch => ({_getTweets: resourceType => dispatch(getTweets(resourceType)),
-    _getDirection: (resourceType,id) => dispatch(getDirection(resourceType,id))
-    }))(App);
+  dispatch => ({_getTweets: resourceType => dispatch(getTweets(resourceType))
+  }))(App);

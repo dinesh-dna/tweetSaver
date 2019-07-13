@@ -3,11 +3,11 @@ import {  Card } from 'react-bootstrap';
 
 class Cards extends React.Component {
     render() {
-        const {tweet} = this.props;
+        const {tweet, onDragStart} = this.props;
         return (
             <React.Fragment>
                 {tweet.map(t => {
-                    return <Card key={t.id} style={{padding: '5px', margin: '10px', backgroundColor: '#C6E2EE'}}>
+                    return <Card key={t.id} style={{padding: '5px', margin: '10px', backgroundColor: '#C6E2EE'}} draggable={true} onDragStart={e=> onDragStart(e, t.id)}>
                                 <Card.Header style={{display: 'flex', justifyContent: 'space-between'}}>
                                     <Card.Img src={t.user.profileImageUrlHttps} style={{width: '50px'}}/>
                                     <Card.Title>{t.user.name}</Card.Title>

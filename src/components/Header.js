@@ -1,7 +1,6 @@
 import React from 'react';
-import {Row, Col } from 'react-bootstrap';
+import {Row} from 'react-bootstrap';
 import icon from '../utils/tweet.png';
-import {HeaderCol} from '../utils/styles';
 
 export function Header() {
     return (

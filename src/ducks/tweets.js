@@ -23,7 +23,6 @@ export function* tweetWatcherSaga() {
   
 export default function reducer(state = initialState, action) { 
     const {type, requestType, response} = action;
-
     switch(type) {
         case REQUEST_SUCCEEDED:
             if(requestType === GET_TWEETS) {
