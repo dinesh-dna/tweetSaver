@@ -2,7 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {getTweets} from '../../ducks/tweets';
 import Tweets from '../../components/Cards';
-import {Row, Col} from 'react-bootstrap';
+import {Row} from 'react-bootstrap';
+import {StyledInput, TweetListCol, SavedTweetCol} from './styles';
 
 let filteredContent = [];
 export class App extends React.Component {
@@ -11,8 +12,7 @@ export class App extends React.Component {
     super(props);
     this.state = {
       search: '',
-      searchList: [],
-      savedTweet: [],
+      savedTweet: JSON.parse(localStorage.getItem('savedtweet')) || [],
       tweetList: this.props.tweets
     }
   }
@@ -24,6 +24,18 @@ export class App extends React.Component {
   componentDidUpdate(prevState, prevProps) {
     const {savedTweet, tweetList} = this.state;
     let array = [...tweetList];
+    this.removeFromTweetList(savedTweet, tweetList, array, prevState);
+  }
+
+   componentWillReceiveProps(prevProps){
+    if(this.props.tweets !== prevProps.tweets){
+      this.setState((state, props) => { 
+        return {tweetList: props.tweets.tweets}
+      })
+    }
+   }
+
+   removeFromTweetList = (savedTweet, tweetList, array, prevState) => {
     if(savedTweet.length> 0 && savedTweet !== prevState.savedTweet){
       for( var i=array.length - 1; i>=0; i--){
         for( var j=0; j<savedTweet.length; j++){
@@ -38,15 +50,7 @@ export class App extends React.Component {
           }
         }
     }
-  }
-
-   componentWillReceiveProps(prevProps){
-    if(this.props.tweets !== prevProps.tweets){
-      this.setState((state, props) => { 
-        return {tweetList: props.tweets.tweets}
-      })
-    }
-   }
+  };
 
   handleSearch = (event) => {
      this.setState({search: event.target.value}, function() {
@@ -65,7 +69,6 @@ export class App extends React.Component {
   }
 
   onDragStart = (e, obj) => {
-    console.log(e, obj);
     e.dataTransfer.setData('Object', obj);
   };
 
@@ -78,36 +81,35 @@ export class App extends React.Component {
     });
 
     draggedObject.forEach(obj => (
-      this.setState({savedTweet: [...this.state.savedTweet, obj]})
+      this.setState({savedTweet: [...this.state.savedTweet, obj]}, () => {
+        localStorage.setItem('savedtweet', JSON.stringify(this.state.savedTweet))
+      })
       ))
   }
 
   render(){
-  const { tweets } = this.props;
-  const {search, savedTweet,searchList, tweetList} = this.state;
+  const {search, savedTweet, tweetList} = this.state;
   return (
     <div style={{margin: '20px'}}>
-      <input 
+      <StyledInput 
         type='text' 
         placeholder=' Search Twitter ... '
         value={search} 
         onChange={this.handleSearch}
-        style={{margin: '10px', width: '30%', padding: '5px', border: '1px solid black'}}
       />
 
       {tweetList.length > 0 ? (
         <Row >
-          <Col sm={6} style={{ padding: '8px'}}>
+          <TweetListCol sm={6}>
               <Tweets tweet={tweetList} onDragStart={this.onDragStart}/>
-          </Col>
-          <Col sm={6} 
-              style={{border: '0.5px dotted black', marginTop: '20px'}} 
+          </TweetListCol>
+          <SavedTweetCol sm={6} 
               onDragOver = {(e) => this.onDragOver(e)}
               onDrop= {e => this.onDrop(e)}>
               {savedTweet.length > 0 ? 
               <Tweets tweet={savedTweet} onDragStart={this.onDragStart}/> : 'Saved Tweets'
               }          
-          </Col>
+          </SavedTweetCol>
         </Row>
       ) : <React.Fragment> No Tweets found ... </React.Fragment>}
     </div>

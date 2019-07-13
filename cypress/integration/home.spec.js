@@ -26,7 +26,7 @@ describe('Cypress Home Page test' ,() => {
         cy.get('#txtstopNumber').type('1000');
         cy.get('#stopNumber').should('be.enabled');
         cy.get('#stopNumber').click();
-        cy.url().should('eq', 'http://localhost:3000/nextTrip');
+        cy.url().should('eq', 'http://localhost:3000/');
         cy.get('.btn');
     });
 
@@ -35,7 +35,7 @@ describe('Cypress Home Page test' ,() => {
         cy.get('#txtstopNumber').type('1000');
         cy.get('#stopNumber').should('be.enabled');
         cy.get('#stopNumber').click();
-        cy.url().should('eq', 'http://localhost:3000/nextTrip');
+        cy.url().should('eq', 'http://localhost:3000/');
         cy.get('.btn').click();
         cy.url().should('eq', 'http://localhost:3000/');
     });

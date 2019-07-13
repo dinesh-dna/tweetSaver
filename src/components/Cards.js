@@ -1,5 +1,6 @@
 import React from 'react';
 import {  Card } from 'react-bootstrap';
+import {StyledCard, StyledCardHeader} from './styles';
 
 class Cards extends React.Component {
     render() {
@@ -7,16 +8,16 @@ class Cards extends React.Component {
         return (
             <React.Fragment>
                 {tweet.map(t => {
-                    return <Card key={t.id} style={{padding: '5px', margin: '10px', backgroundColor: '#C6E2EE'}} draggable={true} onDragStart={e=> onDragStart(e, t.id)}>
-                                <Card.Header style={{display: 'flex', justifyContent: 'space-between'}}>
-                                    <Card.Img src={t.user.profileImageUrlHttps} style={{width: '50px'}}/>
+                    return <StyledCard key={t.id} draggable={true} onDragStart={e=> onDragStart(e, t.id)}>
+                                <StyledCardHeader>
+                                    <Card.Img src={t.user.profileImageUrlHttps} style={{width: '60px'}}/>
                                     <Card.Title>{t.user.name}</Card.Title>
                                     <Card.Text>{`@${t.user.screenName}`}</Card.Text>
-                                </Card.Header>
+                                </StyledCardHeader>
                                 <Card.Body>
                                     <blockquote className="blockquote mb-0">{t.text}</blockquote>
                                 </Card.Body>
-                            </Card>
+                            </StyledCard>
                 })}  
             </React.Fragment>
         );
