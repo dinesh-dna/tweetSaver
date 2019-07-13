@@ -1,9 +1,6 @@
 # Tweet Saver  
 Tweet Saver  case study
 
-Model URL :  https://www..org/nextripbadge.aspx
-Tweet Saver API documentation: http://svc..org/
-
 ### Structure
 src/ contains the app code.<br>
   
